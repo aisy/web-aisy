@@ -1,0 +1,24 @@
+- hosts: server
+  vars:
+    myimage: aisymr/web-aisy
+  tasks:
+    - name: install python-docker di ubuntu
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3
+        - python3-pip
+        - python3-docker
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: running docker on remote server
+      docker_container:
+        name: ct-ansible
+        image: "{{ myimage }}"
+        state: started
+        published_ports:
+          - 10000:80
+        pull: yes
+        recreate: yes
+        restart_policy: always
